@@ -1,0 +1,11 @@
+Model Information:
+* title:	Simple Spotlight
+* source:	https://sketchfab.com/3d-models/simple-spotlight-ee5cb9c4ef734c2283e5a365467689b3
+* author:	shortpaca (https://sketchfab.com/shortpaca)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Simple Spotlight" (https://sketchfab.com/3d-models/simple-spotlight-ee5cb9c4ef734c2283e5a365467689b3) by shortpaca (https://sketchfab.com/shortpaca) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

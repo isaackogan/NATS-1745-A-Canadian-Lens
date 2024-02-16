@@ -1,0 +1,11 @@
+Model Information:
+* title:	Leather couch
+* source:	https://sketchfab.com/3d-models/leather-couch-c2ac7a44144e4b80ab51f21b59c827f8
+* author:	YouSaveTime (https://sketchfab.com/YouSaveTime)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Leather couch" (https://sketchfab.com/3d-models/leather-couch-c2ac7a44144e4b80ab51f21b59c827f8) by YouSaveTime (https://sketchfab.com/YouSaveTime) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
