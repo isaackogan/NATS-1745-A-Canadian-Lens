@@ -3,19 +3,17 @@ import {Engine} from "../../engine/Engine";
 
 export default class Stars extends THREE.Points {
 
-    constructor(engine: Engine, minHeight) {
+    constructor(engine: Engine, minHeight: number) {
 
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 15000;
+        const particlesCount = 5000;
 
         const vertices = new Float32Array(particlesCount);
 
-        for (let i = 1; i < particlesCount; i++) {
-            vertices[i] = (Math.random() - 0.5) * 100;
-
-            if (i % 2 == 0) {
-                vertices[i] = (Math.random() * 100) + minHeight;
-            }
+        for (let i = 0; i < particlesCount; i+= 3) {
+            vertices[i * 3] = (Math.random() - 0.5) * 200;
+            vertices[i * 3 + 1] = (Math.random() - 0.5) * 100 + minHeight;
+            vertices[i * 3 + 2] = (Math.random() - 0.5) * 200;
         }
 
         particlesGeometry.setAttribute(

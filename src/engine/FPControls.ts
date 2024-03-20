@@ -1,38 +1,8 @@
 import {PointerLockControls} from "three/examples/jsm/controls/PointerLockControls";
 import {Camera, Clock, Vector3} from "three";
 import {Engine} from "./Engine";
+import {NoWalk, NoWalkTriangle} from "../exhibit/models/NoWalkBox";
 
-class Triangle {
-
-    constructor(
-        private A: Vector3,
-        private B: Vector3,
-        private C: Vector3
-    ) {
-    }
-
-    public pointInTriangle(P: Vector3): boolean {
-        // Vectors from point P to vertices A, B, and C
-        const v0 = this.C.clone().sub(this.A);
-        const v1 = this.B.clone().sub(this.A);
-        const v2 = P.clone().sub(this.A);
-
-        // Compute dot products
-        const dot00 = v0.dot(v0);
-        const dot01 = v0.dot(v1);
-        const dot02 = v0.dot(v2);
-        const dot11 = v1.dot(v1);
-        const dot12 = v1.dot(v2);
-
-        // Compute barycentric coordinates
-        const invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-        const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-        const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-        // Check if point is in triangle
-        return (u >= 0) && (v >= 0) && (u + v < 1);
-    }
-}
 
 export default class FPControls extends PointerLockControls {
 
@@ -55,7 +25,22 @@ export default class FPControls extends PointerLockControls {
     private initX = 0;
     private initZ = 1;
 
+    // @ts-ignore
     private readonly engine;
+    private boundingBoxes: NoWalk[] = [];
+
+    addBoundingBox(o: NoWalk) {
+        this.boundingBoxes.push(o);
+    }
+
+    hasBoundCollision(v?: Vector3): boolean {
+        for (let o of this.boundingBoxes) {
+            if (o.isColliding(v)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     constructor(engine: Engine, camera: Camera, domElement?: HTMLElement) {
         super(camera, domElement);
@@ -63,6 +48,7 @@ export default class FPControls extends PointerLockControls {
         this.addListeners();
         this.moveToSpawn();
         this.loadCamera();
+
     }
 
     moveToSpawn() {
@@ -71,26 +57,11 @@ export default class FPControls extends PointerLockControls {
         this.camera.position.y = this.groundY;
     }
 
-    // Room bounding box
-    /*
-    private roomBox = new Triangle(
-        new Vector3(-4.7101189766147105, 1.85, -5.9097070405215915),
-        new Vector3(-4.478187955754046, 1.85, 6.086425694690552),
-        new Vector3(7.799002537090999, 1.85, -0.17370448450241163)
-    )
-     */
-
-    private roomBox = new Triangle(
-        new Vector3(-40.7101189766147105, 1.85, -50.9097070405215915),
-        new Vector3(-40.478187955754046, 1.85, 60.086425694690552),
-        new Vector3(70.799002537090999, 1.85, -10.17370448450241163)
-    )
-
-    // Display bounding box
-    private displayBox = new Triangle(
-        new Vector3(0.5467554497650201, 1.85, 0.7973162841748745),
-        new Vector3(-0.8590739257581543, 1.85, 0.07769454556496944),
-        new Vector3(0.4257287931312949, 1.85, -0.8965808446850704)
+    private roomBox = new NoWalkTriangle(
+        this.camera,
+        new Vector3(-4.7101189766147105, 3, -5.9097070405215915),
+        new Vector3(-4.478187955754046, 3,6.086425694690552),
+        new Vector3(7.799002537090999,  3,-0.17370448450241163)
     )
 
     addListeners() {
@@ -193,7 +164,7 @@ export default class FPControls extends PointerLockControls {
         const newX = this.moveRight2(moveX);
         let moved = false;
 
-        if (moveX && this.roomBox.pointInTriangle(newX) && !this.displayBox.pointInTriangle(newX)) {
+        if (moveX && this.roomBox.isColliding(newX) && !this.hasBoundCollision(newX)) {
             this.camera.position.x = newX.x;
             this.camera.position.z = newX.z;
             moved = true;
@@ -201,7 +172,7 @@ export default class FPControls extends PointerLockControls {
 
         const newZ = this.moveForward2(moveZ);
 
-        if (moveZ && this.roomBox.pointInTriangle(newZ) && !this.displayBox.pointInTriangle(newZ)) {
+        if (moveZ && this.roomBox.isColliding(newZ) && !this.hasBoundCollision(newZ)) {
             this.camera.position.z = newZ.z;
             this.camera.position.x = newZ.x;
             moved = true;
@@ -219,11 +190,11 @@ export default class FPControls extends PointerLockControls {
             this.velocity.y = 0;
         }
 
-        this.getObject().position.y += (this.velocity.y * delta); // new position based on velocity
-
+        const obj = this.getObject();
+        obj.position.y = Math.max(obj.position.y + (this.velocity.y * delta), this.groundY -  this.walkIntensity)
     }
 
-    moveForward2( distance ) {
+    moveForward2( distance: number ) {
 
 
         const camera = this.camera;
@@ -236,7 +207,7 @@ export default class FPControls extends PointerLockControls {
 
     }
 
-    moveRight2( distance ) {
+    moveRight2( distance: number ) {
 
         const camera = this.camera;
         const _vector = new Vector3();
@@ -262,13 +233,13 @@ export default class FPControls extends PointerLockControls {
     loadCamera() {
         const camera = this.camera;
 
-        camera.rotation.x = parseFloat(localStorage.getItem("camera.rotation.x"));
-        camera.rotation.y = parseFloat(localStorage.getItem("camera.rotation.y"));
-        camera.rotation.z = parseFloat(localStorage.getItem("camera.rotation.z"));
+        camera.rotation.x = parseFloat(localStorage.getItem("camera.rotation.x") || "-1.464");
+        camera.rotation.y = parseFloat(localStorage.getItem("camera.rotation.y") || "-1.461");
+        camera.rotation.z = parseFloat(localStorage.getItem("camera.rotation.z") || "-1.46");
 
-        camera.position.x = parseFloat(localStorage.getItem("camera.position.x"));
-        camera.position.y = parseFloat(localStorage.getItem("camera.position.y")) || this.groundY;
-        camera.position.z = parseFloat(localStorage.getItem("camera.position.z")) || 2;
+        camera.position.x = parseFloat(localStorage.getItem("camera.position.x") || "-4.578");
+        camera.position.y = parseFloat(localStorage.getItem("camera.position.y") || String(this.groundY));
+        camera.position.z = parseFloat(localStorage.getItem("camera.position.z") || "0.178") ;
 
     }
 

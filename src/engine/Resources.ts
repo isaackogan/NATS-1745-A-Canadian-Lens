@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 import {EventEmitter} from './utilities/EventEmitter'
 import {FontLoader} from "three/examples/jsm/loaders/FontLoader";
+import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 
 export type Resource =
   | {
@@ -48,7 +49,12 @@ export class Resources extends EventEmitter {
 
   private initLoaders() {
     this.loaders = {
-      gltf: new GLTFLoader(this.loadingManager),
+      gltf: (() => {
+        const gltfLoader: GLTFLoader = new GLTFLoader(this.loadingManager)
+        gltfLoader.dracoLoader = new DRACOLoader();
+        gltfLoader.dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/")
+        return gltfLoader;
+      })(),
       texture: new THREE.TextureLoader(this.loadingManager),
       cubeTexture: new THREE.CubeTextureLoader(this.loadingManager),
       font: new FontLoader()

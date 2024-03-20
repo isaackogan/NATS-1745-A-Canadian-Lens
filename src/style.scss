@@ -12,3 +12,19 @@ body,
 #canvas {
   outline: none;
 }
+
+.crosshair {
+  max-height: 100%;
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  top: calc(50% - 5px);
+  left: calc(50% - 5px);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  opacity: 0;
+  user-select: none;
+}

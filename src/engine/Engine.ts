@@ -9,6 +9,7 @@ import { InfoConfig, InfoUI } from './interface/InfoUI'
 import { Experience, ExperienceConstructor } from './Experience'
 import { Loader } from './interface/Loader'
 import { Raycaster } from './Raycaster'
+import CrossHair from "./CrossHair";
 
 export class Engine {
   public readonly camera!: Camera
@@ -23,6 +24,7 @@ export class Engine {
   public readonly resources!: Resources
   public readonly experience!: Experience
   private readonly loader!: Loader
+  public readonly crosshair!: CrossHair
 
   constructor({
     canvas,
@@ -44,11 +46,12 @@ export class Engine {
     this.scene = new THREE.Scene()
     this.camera = new Camera(this)
     this.raycaster = new Raycaster(this)
-    this.infoUI = new InfoUI({})
+    this.infoUI = new InfoUI(info)
     this.renderEngine = new RenderEngine(this)
     this.experience = new experience(this)
     this.resources = new Resources(this.experience.resources)
     this.loader = new Loader()
+    this.crosshair = new CrossHair();
 
     this.resources.on('loaded', () => {
       this.experience.init()
@@ -67,6 +70,7 @@ export class Engine {
     this.renderEngine.update()
     this.experience.update(delta)
     this.debug.update()
+    this.crosshair.update()
   }
 
   resize() {
