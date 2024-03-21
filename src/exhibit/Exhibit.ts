@@ -137,7 +137,11 @@ export class Exhibit implements Experience {
                     new Vector3(-0.9913766213774969 , 1.5 , 5.33548767008901)
                 ]
             },
-        )
+        );
+
+        for (let box of this.boundingBoxes) {
+            this.engine.camera.controls.addBoundingBox(box);
+        }
 
     }
 
